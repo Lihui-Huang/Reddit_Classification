@@ -13,13 +13,14 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 
 from sklearn.feature_extraction.text import TfidfVectorizer
+import re
 
 #extract the original text
 def pre_process_comments():
     with open("reddit_train.csv", 'r') as f:
             reddit_comments = list(csv.reader(f, delimiter=","))
-    headers = np.array(reddit_comments[0])
-    ID = np.array(reddit_comments).transpose()[0][1:]
+    #headers = np.array(reddit_comments[0])
+    #ID = np.array(reddit_comments).transpose()[0][1:]
     comments = np.array(reddit_comments).transpose()[1][1:]
     subreddits = np.array(reddit_comments).transpose()[2][1:]
 
@@ -49,10 +50,18 @@ def pre_process_comments():
     X_sparse = tfidf.fit_transform(comments)
     X = np.array(X_sparse.toarray())
 
+    with open("reddit_test.csv", 'r') as f:
+            reddit_test_comments = list(csv.reader(f, delimiter=","))
+    test_ID = np.array(reddit_test_comments).transpose()[0][1:]
+    test_comments = np.array(reddit_test_comments).transpose()[1][1:]
+    Test_sparse = tfidf.transform(test_comments)
+    Test = np.array(Test_sparse.toarray())
+
+
     #np.savetxt('X.npy', X, fmt='%s')
     #np.savetxt('y.npy', subreddits, fmt='%s')
 
-    return X, subreddits
+    return X, subreddits, Test, test_ID
 
 #after stop words and lemmatization
 #remove the words that appear very rarely
