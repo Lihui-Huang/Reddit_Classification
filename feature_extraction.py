@@ -14,6 +14,7 @@ from nltk.stem import PorterStemmer
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 import re
+from sklearn.decomposition import PCA
 
 #extract the original text
 def pre_process_comments():
@@ -46,22 +47,40 @@ def pre_process_comments():
             delete_features.append(i)
     delete_X = np.delete(X, delete_features, 1)
     """
-    tfidf = TfidfVectorizer(lowercase=True, analyzer='word', stop_words='english', ngram_range=(1, 1))
-    X_sparse = tfidf.fit_transform(comments)
-    X = np.array(X_sparse.toarray())
 
+
+    tfidf = TfidfVectorizer(lowercase=True, analyzer='word', stop_words='english', ngram_range=(1, 1))
+    X = tfidf.fit_transform(comments)
+    #X = np.array(X_sparse.toarray())
+
+
+    #vectorizer = CountVectorizer(stop_words='english')
+    #X_sparse = vectorizer.fit_transform(comments)
+    #X = np.array(X_sparse.toarray())
+
+    #X_frequency = np.sum(X, axis=0)
+    #delete_features = []
+    #for i in range(len(X_frequency)):
+    #    if X_frequency[i] <= 1:
+    #        delete_features.append(i)
+    #X = np.delete(X, delete_features, 1)
+    """
     with open("reddit_test.csv", 'r') as f:
             reddit_test_comments = list(csv.reader(f, delimiter=","))
     test_ID = np.array(reddit_test_comments).transpose()[0][1:]
     test_comments = np.array(reddit_test_comments).transpose()[1][1:]
     Test_sparse = tfidf.transform(test_comments)
     Test = np.array(Test_sparse.toarray())
+    """
 
+    #pca = PCA(n_components=10000)
+    #X_sparse = pca.fit_transform(X)
+    #X = np.array(X_sparse.toarray())
 
     #np.savetxt('X.npy', X, fmt='%s')
     #np.savetxt('y.npy', subreddits, fmt='%s')
 
-    return X, subreddits, Test, test_ID
+    return X, subreddits #Test, test_ID
 
 #after stop words and lemmatization
 #remove the words that appear very rarely
