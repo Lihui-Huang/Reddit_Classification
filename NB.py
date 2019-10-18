@@ -44,11 +44,6 @@ class NB:
 # The last colomn means the class 'funny' takes 5% of our training set 
 # Laplace smoothing is also done.
         
-#        self.ls1 = []
-#        self.ls2 = []
-#        
-#        self.accelerate()
-        
     def bernoulli(self):
         for i in range(self.x.shape[0]):
             for j in range(self.x.shape[1]):
@@ -80,7 +75,7 @@ class NB:
           
         
     def predict(self, data_input):     
-        count = 0
+
         print("Input shape is: ", data_input.shape)
         result = np.full( (data_input.shape[0],1), 'COMP551 rapes me' )
         for i in range(data_input.shape[0]):
@@ -101,38 +96,3 @@ class NB:
             result[i,0] = likely_class
 # Store the most likely class in result
         return result
-    
-    def evaluate(self, predict_y, actual_y):
-        count = 0
-        for i in range(predict_y.shape[0]):
-            if predict_y[i] == actual_y[i]:
-                count += 1
-        return count/predict_y.shape[0]
-
-        
-#    def accelerate(self):
-#        for j in self.y_dict.keys():
-#            index = self.y_dict[j]
-#            non_zero = np.nonzero(self.data_table[index,:-1])
-#            self.ls1.append(non_zero)
-#            self.ls2.append(self.data_table[index][non_zero])
-
-#            for j in self.y_dict.keys():
-#                index = self.y_dict[j]
-#                prob = 0
-#                
-#                non_zero =  self.ls1[index][0]
-#                m1 = data_input[i][non_zero]
-#                m2 = self.ls2[index]
-#                for k in range(m1.shape[0]):
-#                    if m1[k] < 0.0003:
-#                        m2[k] = 1 - m2[k]
-#                prob = sum(np.log(m2))
-#                prob = prob/(self.ls1[index][0].shape[0])
-#                prob = prob + np.math.log(self.data_table[index,-1])    
-        
- 
-#x_temp = np.array([[1,0,0,0],[0,1,1,0],[0,1,1,1],[0,1,0,1]])
-#y_temp = np.array([['gigi'],['gigi'],['bibi'],['bibi']])    
-#temp = NB(x_temp,y_temp)
-#temp.predict(np.array([[1,0,0,0],[1,1,1,1],[0,1,1,1],[0,1,1,1]]))
