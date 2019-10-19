@@ -1,4 +1,5 @@
-from sklearn.feature_selection import SelectFromModel, SelectKBest
+from sklearn.ensemble import VotingClassifier
+from sklearn.feature_selection import SelectFromModel, SelectKBest, f_regression
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score
@@ -15,7 +16,7 @@ import feature_extraction
 
 def LSVC(n=5):
     X, y = feature_extraction.pre_process_comments()  # get the data
-    X = SelectKBest(chi2, k=17000).fit_transform(X, y)
+    X = SelectKBest(k=17000).fit_transform(X, y)
 
     LSVC_clf = LinearSVC(penalty='l1', dual=False)
 
@@ -38,7 +39,7 @@ def LSVC(n=5):
 
 def LogReg(n=5):
     X, y = feature_extraction.pre_process_comments()  # get the data
-    X = SelectKBest(chi2, k=17000).fit_transform(X, y)
+    X = SelectKBest(k=17000).fit_transform(X, y)
     '''
     LogReg_clf = Pipeline([
         ('feature_selection', SelectFromModel(LinearSVC(penalty="l1", dual=False, multi_class='crammer_singer', max_iter=5000), threshold="0.8*mean", max_features=50000)),
@@ -67,7 +68,7 @@ def LogReg(n=5):
 
 def MultiNB(n=5):
     X, y = feature_extraction.pre_process_comments()  # get the data
-    X = SelectKBest(chi2, k=17000).fit_transform(X, y)
+    X = SelectKBest(k=17000).fit_transform(X, y)
 
     MultiNB_clf = MultinomialNB(alpha=0.15)
 
@@ -85,3 +86,25 @@ def MultiNB(n=5):
     #np.savetxt('predict.csv', np.array([test_ID, MultiNB_pred]).transpose(), delimiter=',', fmt='%s',header='Id, Category')
 
     return MultiNB_clf
+
+def ensemble(n=5):
+    X, y = feature_extraction.pre_process_comments()  # get the data
+
+    X = SelectKBest(k=17000).fit_transform(X, y)
+
+    LogReg_clf = LogisticRegression(penalty='l1', dual=False)
+    MNB_clf = MultinomialNB(alpha=0.3)
+    LinearSVC_clf = LinearSVC(penalty='l1', dual=False)
+
+    Ensemble_clf = VotingClassifier(estimators=[('lg', LogReg_clf), ('mnb', MNB_clf)], voting='soft')
+
+    Ensemble_cv = cross_val_score(Ensemble_clf, X, y, cv=n)
+
+    Ensemble_clf.fit(X, y)
+
+    score = Ensemble_clf.score(X, y)
+
+    print(Ensemble_cv.mean())
+    print(score)
+
+    return Ensemble_clf
