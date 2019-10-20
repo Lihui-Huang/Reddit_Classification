@@ -11,6 +11,7 @@ import numpy as np
 
 class NB:
     def __init__(self, x, y):
+        x = np.array(x.toarray())
         self.x = x
         self.y = y.reshape(y.shape[0],1)
         self.y_dict = dict()
@@ -77,7 +78,7 @@ class NB:
     def predict(self, data_input):     
 
         print("Input shape is: ", data_input.shape)
-        result = np.full( (data_input.shape[0],1), 'COMP551 rapes me' )
+        result = np.full( (data_input.shape[0],1), 'Hello World' )
         for i in range(data_input.shape[0]):
             max_prob = -1
             likely_class = ''  
