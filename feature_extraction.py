@@ -35,35 +35,11 @@ def pre_process_comments():
         new_comment= ' '.join(lemmer.lemmatize(word) for word in no_stop_words)
         comments[i] = new_comment
 
-    """
-    vectorizer = CountVectorizer(stop_words='english')
-    X_sparse = vectorizer.fit_transform(comments)
-    X = np.array(X_sparse.toarray())
-
-    X_frequency = np.sum(X, axis=0)
-    delete_features = []
-    for i in range(len(X_frequency)):
-        if X_frequency[i] <= 1:
-            delete_features.append(i)
-    delete_X = np.delete(X, delete_features, 1)
-    """
-
 
     tfidf = TfidfVectorizer(lowercase=True, analyzer='word', stop_words='english', ngram_range=(1, 1))
     X = tfidf.fit_transform(comments)
-    #X = np.array(X_sparse.toarray())
 
-
-    #vectorizer = CountVectorizer(stop_words='english')
-    #X_sparse = vectorizer.fit_transform(comments)
-    #X = np.array(X_sparse.toarray())
-
-    #X_frequency = np.sum(X, axis=0)
-    #delete_features = []
-    #for i in range(len(X_frequency)):
-    #    if X_frequency[i] <= 1:
-    #        delete_features.append(i)
-    #X = np.delete(X, delete_features, 1)
+    #used to process test data
     """
     with open("reddit_test.csv", 'r') as f:
             reddit_test_comments = list(csv.reader(f, delimiter=","))
@@ -73,31 +49,5 @@ def pre_process_comments():
     Test = np.array(Test_sparse.toarray())
     """
 
-    #pca = PCA(n_components=10000)
-    #X_sparse = pca.fit_transform(X)
-    #X = np.array(X_sparse.toarray())
-
-    #np.savetxt('X.npy', X, fmt='%s')
-    #np.savetxt('y.npy', subreddits, fmt='%s')
-
     return X, subreddits #Test, test_ID
-
-#after stop words and lemmatization
-#remove the words that appear very rarely
-"""
-X_frequency = np.sum(X, axis=0)
-np.sort(X_frequency)[::-1][90:100]
-
-np.sort(X_frequency)[::-1][190:200]
-
-#there are about 35000 features that have frequency 1
-#there are about 10000 featrues that have frequency 2
-delete_features = []
-for i in range(len(X_frequency)):
-    if X_frequency[i] <= 1:
-        delete_features.append(i)
-delete_X = np.delete(bache_X, delete_features, 1)
-
-delete_X.shape
-"""
-
+    #if we want to submmit a csv prediction to kaggle, just simply delete the python comments

@@ -1,4 +1,5 @@
 from sklearn.ensemble import VotingClassifier
+from sklearn.ensemble import BaggingClassifier
 from sklearn.feature_selection import SelectFromModel, SelectKBest, f_regression
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
@@ -8,8 +9,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import LinearSVC
 from sklearn.pipeline import Pipeline
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras import layers
+#import tensorflow as tf
+#from tensorflow.keras import layers
 from sklearn.feature_selection import SelectKBest, chi2, VarianceThreshold
 from sklearn.naive_bayes import BernoulliNB
 import feature_extraction
@@ -20,6 +21,7 @@ def LSVC(n=5):
     X = SelectKBest(k=17000).fit_transform(X, y)
 
     LSVC_clf = LinearSVC(penalty='l1', dual=False)
+    #LSVC_clf = BaggingClassifier(base_estimator=LSVC_clf, max_samples=0.6, max_features=12000, n_estimators=24, random_state=1)
 
     print("before fitting")
 
@@ -88,7 +90,7 @@ def MultiNB(n=5):
     X, y = feature_extraction.pre_process_comments()  # get the data
     X = SelectKBest(chi2, k=17000).fit_transform(X, y)
 
-    MultiNB_clf = MultinomialNB(alpha=0.15)
+    MultiNB_clf = MultinomialNB(alpha=0.22)
 
     MultiNB_cv = cross_val_score(MultiNB_clf, X, y, cv=n)
 
@@ -101,8 +103,19 @@ def MultiNB(n=5):
     print("cv acc of multiNB is ", MultiNB_cv.mean())
     print("acc of multiNB is ", MultiNB_acc)
 
-    #np.savetxt('predict.csv', np.array([test_ID, MultiNB_pred]).transpose(), delimiter=',', fmt='%s',header='Id, Category')
+    return MultiNB_clf
 
+def MultiNB_Kaggle():
+    X, y, test, test_ID = feature_extraction.pre_process_comments()  # get the data
+    k_best = SelectKBest(chi2, k=17000)
+    X = k_best.fit_transform(X, y)
+    MultiNB_clf = MultinomialNB(alpha=0.22)
+    test_X = k_best.transform(test)
+
+    MultiNB_clf.fit(X, y)
+    MultiNB_pred = MultiNB_clf.predict(test_X)
+
+    np.savetxt('predict.csv', np.array([test_ID, MultiNB_pred]).transpose(), delimiter=',', fmt='%s',header='Id, Category')
     return MultiNB_clf
 
 def ensemble(n=5):
@@ -111,7 +124,7 @@ def ensemble(n=5):
     X = SelectKBest(k=17000).fit_transform(X, y)
 
     LogReg_clf = LogisticRegression(penalty='l1', dual=False)
-    MNB_clf = MultinomialNB(alpha=0.3)
+    MNB_clf = MultinomialNB(alpha=0.22)
     LinearSVC_clf = LinearSVC(penalty='l1', dual=False)
 
     Ensemble_clf = VotingClassifier(estimators=[('lg', LogReg_clf), ('mnb', MNB_clf)], voting='soft')
